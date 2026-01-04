@@ -1,31 +1,32 @@
-# 1. Use Node 20 Alpine (Modern Standard)
-FROM node:20-alpine
+# ---------- Base ----------
+FROM node:20-bullseye-slim
 
-# 2. Set working directory
+# ---------- System deps for canvas ----------
+RUN apt-get update && apt-get install -y \
+  libcairo2-dev \
+  libjpeg-dev \
+  libpango1.0-dev \
+  libgif-dev \
+  librsvg2-dev \
+  python3 \
+  make \
+  g++ \
+  && rm -rf /var/lib/apt/lists/*
+
+# ---------- App ----------
 WORKDIR /app
 
-# 3. 🛠️ INSTALL DEPENDENCIES
-# Even with Node 20, Alpine Linux is "bare bones." 
-# We MUST install these libraries so 'canvas' can work.
-RUN apk add --no-cache \
-    build-base \
-    g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    giflib-dev \
-    python3
-
-# 4. Install Node dependencies
+# Copy only package files first (better caching)
 COPY package*.json ./
-RUN npm install --production
 
-# 5. Copy the rest of the code
+# Install ONLY production deps (CI-safe)
+RUN npm ci --omit=dev
+
+# Copy rest of the source
 COPY . .
 
-# 6. Create folders explicitly
-RUN mkdir -p public/feed data
-
-# 7. Expose and Start
+# ---------- Runtime ----------
+ENV NODE_ENV=production
 EXPOSE 8000
-CMD ["node", "server.js"]
+
+CMD ["npm", "start"]
