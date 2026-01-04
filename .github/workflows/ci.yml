@@ -1,0 +1,38 @@
+name: LifeFeed CI Pipeline
+
+# Trigger on push to 'main' or 'dev' branches
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Check out the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # 2. Setup Node.js
+    - name: Use Node.js 18
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    # 3. Install Dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # 4. Run Tests (The Jest Suite)
+    - name: Run Tests
+      run: npm test
+      env:
+        # We don't need a real key because we Mocked Gemini!
+        GEMINI_API_KEY: "mock-key-for-testing"
+
+    # 5. Verify Docker Build (Dry Run)
+    - name: Build Docker Image
+      run: docker build . --file Dockerfile --tag lifefeed:test
