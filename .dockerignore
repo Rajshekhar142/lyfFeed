@@ -1,0 +1,22 @@
+# 1. Don't copy dependencies (We install them FRESH inside the container)
+node_modules
+
+# 2. Don't copy Git history (Saves massive space)
+.git
+.gitignore
+
+# 3. Don't copy secrets
+.env
+
+# 4. Don't copy tests or coverage reports into Production image
+tests
+coverage
+
+# 5. Don't copy local development junk
+Dockerfile
+README.md
+.DS_Store
+
+# 6. Don't copy local generated data (Start fresh container)
+public/feed/*.png
+data/db.json

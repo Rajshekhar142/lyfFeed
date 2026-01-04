@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+
+# Environment variables (Crucial for security)
+.env
+
+# Generated Artifacts (Don't commit the test images)
+public/feed/*.png
+
+# Local Database (Don't commit your local test data)
+data/db.json
+
+# Testing Coverage Reports
+coverage/
+
+# OS junk
+.DS_Store
+Thumbs.db
